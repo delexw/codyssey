@@ -14,7 +14,7 @@ export function fightPlan(seed: number, eventId: number, hearts: number): Strike
   let left = hearts
   while (left > 0) {
     const isSpecial = left > 1 && random() < SPECIAL_CHANCE
-    const weapon = pickWeapon(random)
+    const weapon = pickWeapon(random, strikes.length === 0)
     const damage = Math.min(isSpecial ? SPECIAL_DAMAGE : weapon.power, left)
     strikes.push({ damage, isSpecial, isCountered: random() < COUNTER_CHANCE, weapon: isSpecial ? 'sword' : weapon.name })
     left -= damage

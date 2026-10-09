@@ -9,8 +9,8 @@ export type { Weapon, WeaponName } from './weapon'
 
 export const WEAPONS: Record<WeaponName, Weapon> = { sword: SWORD, axe: AXE, lance: LANCE, dagger: DAGGER, fireball: FIREBALL }
 
-export function pickWeapon(random: () => number): Weapon {
-  const all = Object.values(WEAPONS)
+export function pickWeapon(random: () => number, canThrow = true): Weapon {
+  const all = Object.values(WEAPONS).filter(weapon => canThrow || !weapon.isThrown)
   let roll = random() * all.reduce((sum, weapon) => sum + weapon.chance, 0)
   for (const weapon of all) {
     roll -= weapon.chance

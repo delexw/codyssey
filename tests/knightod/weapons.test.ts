@@ -42,3 +42,18 @@ test('each strike in a fight names its weapon and takes that weapon\'s power, ne
     }
   }
 })
+
+test('only the first strike of a fight may be thrown; once the monster is engaged, every strike is close', async () => {
+  let sawThrownOpener = false
+  for (let id = 1; id < 300; id += 1) {
+    const plan = fightPlan(7, id, 8)
+    if (WEAPONS[plan[0]?.weapon ?? 'sword'].isThrown) sawThrownOpener = true
+    for (const strike of plan.slice(1)) expect(WEAPONS[strike.weapon].isThrown).toBe(false)
+  }
+  expect(sawThrownOpener).toBe(true)
+})
+
+test('a close-only pick never returns a thrown weapon', async () => {
+  const random = seededRandom(9)
+  for (let roll = 0; roll < 500; roll += 1) expect(pickWeapon(random, false).isThrown).toBe(false)
+})
