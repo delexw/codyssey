@@ -74,7 +74,7 @@ How the game works:
 
 | Mechanism | How it works |
 |---|---|
-| ❤️ Hearts | The knight starts with 5. Every monster and boss shows its hearts beside it. |
+| ❤️ Hearts | The knight starts with 5. Every monster and boss shows one heart and the number it has left beside it, like ♥3. Past 5 hearts, the knight's line shows the count too, like ♥7/12. |
 | 📈 Monsters level up | Monsters start with 1 heart and gain one every 3 knight levels. Bosses gain one every 2 knight levels, on top of their own. |
 | ⭐ Levels | Each level needs 8 more xp than the last. A new level adds a heart and heals the knight fully. |
 | 👹 Boss fights | A boss swings back and can wound the knight, but never lands the last blow. Some of the knight's strikes are specials that hit for 2. |

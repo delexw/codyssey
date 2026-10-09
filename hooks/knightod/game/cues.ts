@@ -1,4 +1,5 @@
 import type { EventKind, GameEvent, Species } from '../../../types'
+import { heartCount } from './label'
 import { hashText } from './random'
 
 export type Cue = { kind: EventKind; species: Species | null; target: string; hearts?: number }
@@ -91,7 +92,7 @@ export function cueName(cue: Cue): string {
     case 'monster':
       return `the ${SPECIES_NAMES[cue.species ?? 'slime']} of "${cue.target}"`
     case 'boss':
-      return `the ${SPECIES_NAMES[cue.species ?? 'dragon']} ${'♥'.repeat(cue.hearts ?? 1)}`
+      return `the ${SPECIES_NAMES[cue.species ?? 'dragon']} ${heartCount(cue.hearts ?? 1)}`
     case 'chest':
       return 'a treasure chest'
     case 'scroll':

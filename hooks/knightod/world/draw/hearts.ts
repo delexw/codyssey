@@ -10,25 +10,29 @@ export const HEART = '♥'
 export const LOST_HEART = '♡'
 export const HEART_COLOR = '#FF1744'
 export const LOST_HEART_COLOR = '#757575'
-export const HEART_ROWS = STRIP_PIXEL_ROWS / 2 - 1
-export const MIN_HEARTS_PER_ROW = 4
+export const HEART_ROW = STRIP_PIXEL_ROWS / 2 - 2
 
 function foeWidth(foe: Foe, tick: number): number {
   return spriteWidth(frameOf(MONSTERS[foe.species ?? 'slime'].frames, Math.floor(tick / 2)))
 }
 
+export function heartLabel(left: number): string {
+  return left > 0 ? `${HEART}${left}` : LOST_HEART
+}
+
 export function heartMarks(world: World, width: number): (Mark | null)[][] {
-  const marks: (Mark | null)[][] = Array.from({ length: HEART_ROWS }, () => Array.from({ length: width }, () => null))
+  const marks: (Mark | null)[][] = Array.from({ length: HEART_ROW + 1 }, () => Array.from({ length: width }, () => null))
+  const row = marks[HEART_ROW]
+  if (row === undefined) return marks
   for (const foe of world.foes) {
     if (!isFighting(foe)) continue
     const left = heartsLeft(foe)
+    const color = left > 0 ? HEART_COLOR : LOST_HEART_COLOR
     const firstColumn = foe.x + foeWidth(foe, world.tick)
-    const perRow = Math.max(MIN_HEARTS_PER_ROW, Math.ceil(foe.maxHp / HEART_ROWS))
-    for (let index = 0; index < foe.maxHp; index += 1) {
-      const row = marks[HEART_ROWS - 1 - Math.floor(index / perRow)]
-      const x = firstColumn + (index % perRow)
-      if (row !== undefined && x >= 0 && x < width) row[x] = index < left ? { text: HEART, color: HEART_COLOR } : { text: LOST_HEART, color: LOST_HEART_COLOR }
-    }
+    ;[...heartLabel(left)].forEach((text, index) => {
+      const x = firstColumn + index
+      if (x >= 0 && x < width) row[x] = { text, color }
+    })
   }
   return marks
 }

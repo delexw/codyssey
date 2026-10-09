@@ -29,8 +29,8 @@ test('five bosses come in order every two minutes of play, each once the last is
     'the King Slime ♥♥♥',
     'the Ogre ♥♥♥♥',
     'the Lich ♥♥♥♥♥',
-    'the Demon ♥♥♥♥♥♥',
-    'the Shadow King ♥♥♥♥♥♥♥',
+    'the Demon ♥6',
+    'the Shadow King ♥7',
   ])
   expect(dueBoss(save, scene, 60 * MINUTE_MS)).toBeNull()
 })

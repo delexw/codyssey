@@ -4,7 +4,7 @@ import type { Scene } from '../../types'
 import { KNIGHT_WIDTH } from '../../hooks/knightod/sprites/knight'
 import { counterHits, fightPlan } from '../../hooks/knightod/game/fight'
 import { drawWorld } from '../../hooks/knightod/world/draw'
-import { HEART_COLOR, HEART_ROWS, heartMarks } from '../../hooks/knightod/world/draw/hearts'
+import { HEART_COLOR, HEART_ROW, heartMarks } from '../../hooks/knightod/world/draw/hearts'
 import { canvasRuns } from '../../hooks/knightod/sprites/pixel'
 import { WEAPONS } from '../../hooks/knightod/game/weapons'
 import { stepWorld } from '../../hooks/knightod/world/step'
@@ -108,24 +108,18 @@ function heartColumns(world: World, from: number, to: number): string[] {
   return heartMarks(world, WIDTH).map(row => row.slice(from, to).map(mark => mark?.text ?? ' ').join(''))
 }
 
-test('a monster shows its hearts side by side in one row beside its body, full for those left and hollow for those lost', async () => {
-  const world = { ...startWorld(scene()), foes: [{ id: 1, kind: 'boss', species: 'lich', x: 20, phase: 'coming', ticks: 0, hp: 3, maxHp: 4, strikes: 1 }] } as World
-  expect(HEART_ROWS).toBe(2)
-  expect(heartColumns(world, 24, 30)).toEqual(['      ', ' ♥♥♥♡ '])
-  expect(heartMarks(world, WIDTH)[1]?.[25]?.color).toBe(HEART_COLOR)
+test('a monster shows one heart and the number it has left, touching, beside its body', async () => {
+  const lich = { ...startWorld(scene()), foes: [{ id: 1, kind: 'boss', species: 'lich', x: 20, phase: 'coming', ticks: 0, hp: 3, maxHp: 4, strikes: 1 }] } as World
+  expect(HEART_ROW).toBe(1)
+  expect(heartColumns(lich, 24, 29)).toEqual(['     ', ' ♥3  '])
+  expect(heartMarks(lich, WIDTH)[1]?.[26]?.color).toBe(HEART_COLOR)
+  const king = { ...startWorld(scene()), foes: [{ id: 1, kind: 'boss', species: 'shadow-king', x: 5, phase: 'coming', ticks: 0, hp: 12, maxHp: 12, strikes: 0 }] } as World
+  expect(heartColumns(king, 12, 16)).toEqual(['    ', '♥12 '])
 })
 
-test('a boss with more than four hearts starts a second row above, and a big one widens the rows so every heart shows', async () => {
+test('a beaten monster shows a hollow heart, and scrolls and chests show none', async () => {
   const start = startWorld(scene())
-  const ogre = { ...start, foes: [{ id: 1, kind: 'boss', species: 'ogre', x: 10, phase: 'coming', ticks: 0, hp: 6, maxHp: 6, strikes: 0 }] } as World
-  expect(heartColumns(ogre, 16, 21)).toEqual(['♥♥   ', '♥♥♥♥ '])
-  const king = { ...start, foes: [{ id: 1, kind: 'boss', species: 'shadow-king', x: 5, phase: 'coming', ticks: 0, hp: 10, maxHp: 10, strikes: 0 }] } as World
-  expect(heartColumns(king, 12, 18).join('').replaceAll(' ', '')).toHaveLength(10)
-})
-
-test('every monster shows its hearts on its right, even a one-heart slime, and scrolls and chests show none', async () => {
-  const start = startWorld(scene())
-  expect(heartColumns({ ...start, foes: [{ id: 1, kind: 'monster', species: 'slime', x: 20, phase: 'coming', ticks: 0, hp: 1, maxHp: 1, strikes: 0 }] }, 24, 27)).toEqual(['   ', ' ♥ '])
+  expect(heartColumns({ ...start, foes: [{ id: 1, kind: 'monster', species: 'slime', x: 20, phase: 'hit', ticks: 2, hp: 0, maxHp: 1, strikes: 1 }] }, 24, 27)).toEqual(['   ', ' ♡ '])
   expect(heartColumns({ ...start, foes: [{ id: 1, kind: 'chest', species: null, x: 20, phase: 'coming', ticks: 0, hp: 1, maxHp: 1, strikes: 0 }] }, 0, WIDTH).join('').trim()).toBe('')
 })
 
