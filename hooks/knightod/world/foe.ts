@@ -43,7 +43,7 @@ export function heartsLeft(foe: Foe): number {
 }
 
 export function strikeOf(foe: Foe, seed: number, index: number): Strike | undefined {
-  if (foe.kind !== 'boss') return undefined
+  if (!isFighting(foe)) return undefined
   return fightPlan(seed, foe.id, foe.maxHp)[index]
 }
 

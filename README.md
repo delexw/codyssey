@@ -1,7 +1,7 @@
 # codyssey
 
 > [!IMPORTANT]
-> Only tested on macOS. Not sure yet how it behaves on Linux or Windows.
+> miod's music only works on macOS.
 
 I'm an engineer, but these days I solve the boring problems entirely by vibe coding. Somewhere along the way I felt I had lost the creativity and curiosity I used to have when writing code myself.
 
@@ -52,6 +52,18 @@ What you can meet on the road:
 | Commits, pushes, merges, tags, or opens or merges a PR | A treasure chest | 5 to 24 gold |
 | Has been playing for 2, 4, 6, 8, then 10 minutes | King Slime (3 hearts), Ogre (4), Lich (5), Demon (6), Shadow King (7) | 2 xp and 5 gold or more per heart |
 
+The knight picks a weapon at random for every strike:
+
+| Weapon | Range | Power | How often | How it hits |
+|---|---|---|---|---|
+| Sword | Close | 1 heart | Often | A slash |
+| Axe | Close | 2 hearts | Sometimes | A heavy chop |
+| Lance | A little further | 1 heart | Sometimes | Reaches the monster a few steps early |
+| Dagger | Far | 1 heart | Sometimes | Thrown early, flies to the monster |
+| Fireball | Furthest | 2 hearts | Rarely | Cast from far off, flies to the monster |
+
+Now and then a strike becomes a glowing sword special that takes 2 hearts. Each weapon is one file in `hooks/knightod/game/weapons/`, with its range, power and how often it's picked.
+
 How the game works:
 
 | Mechanism | How it works |
@@ -77,7 +89,7 @@ Restyles the transcript so the story is easier to follow.
 
 ## Install
 
-Needs Claude Code 2.1.290 or newer, on macOS.
+Needs Claude Code 2.1.290 or newer.
 
 ```bash
 claude plugin marketplace add delexw/codyssey
@@ -121,7 +133,7 @@ All three come in the one plugin, and each turns on and off with its own command
 Each mod lives in its own folder under `hooks/`, and `hooks/register.tsx` turns all three on.
 
 - **miod:** each mood is one row in `hooks/miod/moods.ts`, each flavour one row in `hooks/miod/flavours.ts`, each sound style one entry in `hooks/miod/styles.ts`, and each wave look one file in `hooks/miod/waves/`.
-- **knightod:** monsters and bosses are sprites in `hooks/knightod/sprites/`; which tool raises which encounter is in `hooks/knightod/game/cues.ts`, and the boss order and timing in `hooks/knightod/game/bosses.ts`.
+- **knightod:** each weapon is one file in `hooks/knightod/game/weapons/`; monsters and bosses are sprites in `hooks/knightod/sprites/`; which tool raises which encounter is in `hooks/knightod/game/cues.ts`, and the boss order and timing in `hooks/knightod/game/bosses.ts`.
 - **scrollod:** the game style's badges are in `hooks/scrollod/badge.ts`, and the styles in `hooks/scrollod/style.ts`.
 
 Then check it:
@@ -135,6 +147,6 @@ Run a checkout without installing it with `claude --plugin-dir <path to this rep
 
 ## Limitations
 
-- Only tested on macOS, where Claude Code plays miod's audio through `afplay`.
+- miod's music only plays on macOS, where Claude Code plays it through `afplay`.
 - miod's sound is simple chiptune-style tones.
 - codyssey only sees the session it's loaded in.

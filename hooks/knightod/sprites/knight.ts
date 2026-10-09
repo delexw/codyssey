@@ -10,6 +10,9 @@ const PALETTE = {
   L: '#546E7A',
   Y: '#FFEB3B',
   O: '#FF9800',
+  W: '#8D6E63',
+  B: '#B0BEC5',
+  R: '#FF5722',
 }
 
 export const KNIGHT_WIDTH = 5
@@ -22,6 +25,19 @@ export const KNIGHT_WALK: readonly Sprite[] = [
 export const KNIGHT_SLASH: Sprite = { palette: PALETTE, rows: ['.HH....', '.HV....', 'CAAAGSS', '.AA....', '.L.L...'] }
 
 export const KNIGHT_SPECIAL: Sprite = { palette: PALETTE, rows: ['.HH...Y.', '.HV..YO.', 'CAAAGYYYO', '.AA..YO.', '.L.L..Y.'] }
+
+export const KNIGHT_AXE: Sprite = { palette: PALETTE, rows: ['.HH..BB', '.HV.WBB', 'CAAAG..', '.AA....', '.L.L...'] }
+
+export const KNIGHT_LANCE: Sprite = { palette: PALETTE, rows: ['.HH.......', '.HV.......', 'CAAAGWWWBB', '.AA.......', '.L.L......'] }
+
+export const KNIGHT_THROW: Sprite = { palette: PALETTE, rows: ['.HH.G', '.HVG.', 'CAAA.', '.AA..', '.L.L.'] }
+
+export const DAGGER_SPRITE: readonly Sprite[] = [{ palette: PALETTE, rows: ['LSB'] }]
+
+export const FIREBALL_SPRITE: readonly Sprite[] = [
+  { palette: PALETTE, rows: ['.OO.', 'ROYY', '.OO.'] },
+  { palette: PALETTE, rows: ['..O.', 'ROYY', '.O..'] },
+]
 
 export const KNIGHT_REST: Sprite = { palette: PALETTE, rows: ['.HH.S', '.HV.S', 'CAAAG', 'LLL..'] }
 

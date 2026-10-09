@@ -5,7 +5,7 @@ import { registerMiod } from './miod/register'
 import { registerScrollod } from './scrollod/register'
 
 export const register: Register = (on, options) => {
-  registerMiod(on, options)
   registerKnightod(on, options)
+  registerMiod(on, options)
   registerScrollod(on, options)
 }

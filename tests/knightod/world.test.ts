@@ -4,6 +4,9 @@ import type { Scene } from '../../types'
 import { KNIGHT_WIDTH } from '../../hooks/knightod/sprites/knight'
 import { counterHits, fightPlan } from '../../hooks/knightod/game/fight'
 import { drawWorld } from '../../hooks/knightod/world/draw'
+import { HEART_COLOR, HEARTS_PER_COLUMN, heartMarks } from '../../hooks/knightod/world/draw/hearts'
+import { canvasRuns } from '../../hooks/knightod/sprites/pixel'
+import { WEAPONS } from '../../hooks/knightod/game/weapons'
 import { stepWorld } from '../../hooks/knightod/world/step'
 import type { World } from '../../hooks/knightod/world/world'
 import { GROUND_ROW, KNIGHT_X, STRIP_PIXEL_ROWS, startWorld } from '../../hooks/knightod/world/world'
@@ -101,20 +104,48 @@ test('a boss takes one slash per heart and is only slain on the last one', async
   expect(world.settled).toContain(1)
 })
 
-test('a boss shows its hearts above it, red for those left and grey for those lost', async () => {
-  const world = startWorld(scene())
-  const canvas = drawWorld({ ...world, foes: [{ id: 1, kind: 'boss', species: 'lich', x: 20, phase: 'coming', ticks: 0, hp: 3, maxHp: 4, strikes: 1 }] }, WIDTH)
-  expect(canvas[0]?.slice(20, 25)).toEqual(['#FF1744', '#FF1744', '#FF1744', '#424242', null])
+function heartColumns(world: World, from: number, to: number): string[] {
+  return heartMarks(world, WIDTH).map(row => row.slice(from, to).map(mark => mark?.text ?? ' ').join(''))
+}
+
+test('a boss stacks heart shapes in columns on its right, full for those left and hollow for those lost', async () => {
+  const world = { ...startWorld(scene()), foes: [{ id: 1, kind: 'boss', species: 'lich', x: 20, phase: 'coming', ticks: 0, hp: 3, maxHp: 4, strikes: 1 }] } as World
+  expect(HEARTS_PER_COLUMN).toBe(2)
+  expect(heartColumns(world, 24, 28)).toEqual([' ♥♥ ', ' ♥♡ '])
+  expect(heartMarks(world, WIDTH)[0]?.[25]?.color).toBe(HEART_COLOR)
 })
 
-test('every monster shows its hearts above it, even a one-heart slime, and scrolls and chests show none', async () => {
-  const world = startWorld(scene())
-  const slime = drawWorld({ ...world, foes: [{ id: 1, kind: 'monster', species: 'slime', x: 20, phase: 'coming', ticks: 0, hp: 1, maxHp: 1, strikes: 0 }] }, WIDTH)
-  expect(slime[0]?.slice(20, 22)).toEqual(['#FF1744', null])
-  const orc = drawWorld({ ...world, foes: [{ id: 1, kind: 'monster', species: 'orc', x: 20, phase: 'coming', ticks: 0, hp: 1, maxHp: 2, strikes: 1 }] }, WIDTH)
-  expect(orc[0]?.slice(20, 23)).toEqual(['#FF1744', '#424242', null])
-  const chest = drawWorld({ ...world, foes: [{ id: 1, kind: 'chest', species: null, x: 20, phase: 'coming', ticks: 0, hp: 1, maxHp: 1, strikes: 0 }] }, WIDTH)
-  expect(chest[0]?.slice(20, 22)).toEqual([null, null])
+test('every monster shows its hearts on its right, even a one-heart slime, and scrolls and chests show none', async () => {
+  const start = startWorld(scene())
+  expect(heartColumns({ ...start, foes: [{ id: 1, kind: 'monster', species: 'slime', x: 20, phase: 'coming', ticks: 0, hp: 1, maxHp: 1, strikes: 0 }] }, 24, 27)).toEqual([' ♥ ', '   '])
+  expect(heartColumns({ ...start, foes: [{ id: 1, kind: 'chest', species: null, x: 20, phase: 'coming', ticks: 0, hp: 1, maxHp: 1, strikes: 0 }] }, 0, WIDTH).join('').trim()).toBe('')
+})
+
+test('a heart takes its whole cell on the strip, in place of the pixels under it', async () => {
+  const canvas = [['#111111', null], ['#222222', null]]
+  const rows = canvasRuns(canvas, [[{ text: '♥', color: HEART_COLOR }, null]])
+  expect(rows[0]?.[0]).toEqual({ text: '♥', color: HEART_COLOR })
+})
+
+test('a thrown weapon leaves the knight early, flies, and lands on a monster that is still far away', async () => {
+  let id = 1
+  while (fightPlan(7, id, 1)[0]?.weapon !== 'fireball') id += 1
+  let world = stepWorld({ ...startWorld(scene()), scene: scene({ events: [{ id, kind: 'monster', species: 'orc', name: 'the Orc', hearts: 1, isSettled: false }], nextId: id + 1 }) }, WIDTH)
+  let thrownAt: number | null = null
+  let landedAt: number | null = null
+  for (let ticks = 0; ticks < 80 && landedAt === null; ticks += 1) {
+    const before = world
+    world = stepWorld(world, WIDTH)
+    if (thrownAt === null && world.shot !== null) {
+      thrownAt = world.foes[0]?.x ?? 0
+      expect(world.action).toBe('throw')
+      expect(world.shot.weapon).toBe('fireball')
+    }
+    if (before.shot !== null && world.shot === null) landedAt = before.foes[0]?.x ?? 0
+  }
+  expect(thrownAt).toBeGreaterThan(KNIGHT_X + KNIGHT_WIDTH + 1 + WEAPONS.lance.range)
+  expect(landedAt).toBeGreaterThan(KNIGHT_X + KNIGHT_WIDTH + 1)
+  expect(world.settled).toEqual([id])
 })
 
 test('the knight flashes hurt when a boss strikes back during the fight', async () => {

@@ -3,6 +3,7 @@ import type { ClientModule } from 'claude-code'
 import type { StripProps } from '../../types'
 import { canvasRuns } from './sprites/pixel'
 import { drawWorld } from './world/draw'
+import { heartMarks } from './world/draw/hearts'
 import { stepWorld } from './world/step'
 import type { World } from './world/world'
 import { isSameScene, startWorld } from './world/world'
@@ -27,7 +28,7 @@ const Strip: ClientModule<StripProps, World> = ({ scene }, surface) => {
   }
 
   const world = surface.state ?? startWorld(scene)
-  const rows = canvasRuns(drawWorld(world, surface.columns))
+  const rows = canvasRuns(drawWorld(world, surface.columns), heartMarks(world, surface.columns))
 
   return (
     <Box flexDirection="column">

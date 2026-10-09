@@ -1,12 +1,15 @@
+import { WEAPONS } from '../game/weapons'
 import { KNIGHT_WIDTH } from '../sprites/knight'
 import type { Foe } from './foe'
 import { hitTicks, isFighting, spawnFoe, STRIKE_TICKS, strike, strikeOf } from './foe'
-import type { World } from './world'
+import type { Shot, World } from './world'
 import { KNIGHT_X, MAX_FOES, MAX_SETTLED } from './world'
 
 const ACTION_TICKS = 3
 const CONTACT_X = KNIGHT_X + KNIGHT_WIDTH + 1
 const COUNTER_DELAY_TICKS = 2
+const SHOT_SPEED = 3
+const SHOT_START_X = KNIGHT_X + KNIGHT_WIDTH
 
 function isCounterTick(foe: Foe, seed: number): boolean {
   if (foe.kind !== 'boss' || foe.phase === 'coming') return false
@@ -56,15 +59,50 @@ export function stepWorld(world: World, width: number): World {
     actionTicks = ACTION_TICKS
   }
 
+  let weapon = world.weapon ?? 'sword'
+  let shot: Shot | null = world.shot ?? null
+  if (shot !== null) {
+    const flying: Shot = shot
+    const targetAt = foes.findIndex(foe => foe.id === flying.targetId)
+    const target = foes[targetAt]
+    const nextX = flying.x + SHOT_SPEED
+    if (target === undefined) {
+      shot = null
+    } else if (nextX >= target.x) {
+      const struck = strike(target, target.x, scene.seed)
+      foes[targetAt] = struck
+      if (struck.phase === 'hit') settled.push(target.id)
+      shot = null
+    } else {
+      shot = { ...flying, x: nextX }
+    }
+  }
+
   const front = foes[0]
   const isBusy = foes.some(foe => foe.phase !== 'coming')
-  if (scene.isRunning && front !== undefined && front.phase === 'coming' && front.x <= CONTACT_X && !isBusy) {
-    const struck = strike(front, CONTACT_X, scene.seed)
-    foes[0] = struck
-    if (struck.phase === 'hit') settled.push(front.id)
-    if (isFighting(front) && action !== 'hurt') {
-      action = strikeOf(struck, scene.seed, struck.strikes - 1)?.isSpecial === true ? 'special' : 'slash'
-      actionTicks = ACTION_TICKS
+  if (scene.isRunning && front !== undefined && front.phase === 'coming' && shot === null && !isBusy) {
+    const strikeIndex = front.strikes || 0
+    const planned = strikeOf(front, scene.seed, strikeIndex)
+    const isSpecial = planned?.isSpecial === true
+    const chosen = planned?.weapon ?? 'sword'
+    if (front.x <= CONTACT_X + WEAPONS[chosen].range) {
+      if (WEAPONS[chosen].isThrown) {
+        shot = { weapon: chosen, x: SHOT_START_X, targetId: front.id }
+        weapon = chosen
+        if (action !== 'hurt') {
+          action = 'throw'
+          actionTicks = ACTION_TICKS
+        }
+      } else {
+        const struck = strike(front, Math.max(CONTACT_X, front.x), scene.seed)
+        foes[0] = struck
+        if (struck.phase === 'hit') settled.push(front.id)
+        if (isFighting(front) && action !== 'hurt') {
+          weapon = chosen
+          action = isSpecial ? 'special' : 'slash'
+          actionTicks = ACTION_TICKS
+        }
+      }
     }
   }
 
@@ -72,5 +110,5 @@ export function stepWorld(world: World, width: number): World {
   const step = scene.isRunning && !isBlocked ? scene.speed : 0
   if (step > 0) foes = foes.map(foe => ({ ...foe, x: foe.x - step }))
 
-  return { ...world, tick: world.tick + 1, scroll: world.scroll + step, lastEventId, foes, action, actionTicks, settled: settled.slice(-MAX_SETTLED), wounds }
+  return { ...world, tick: world.tick + 1, scroll: world.scroll + step, lastEventId, foes, action, actionTicks, weapon, shot, settled: settled.slice(-MAX_SETTLED), wounds }
 }

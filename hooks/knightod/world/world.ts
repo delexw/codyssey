@@ -1,7 +1,10 @@
 import type { Scene } from '../../../types'
+import type { WeaponName } from '../game/weapons'
 import type { Foe } from './foe'
 
-export type KnightAction = 'walk' | 'slash' | 'special' | 'hurt'
+export type KnightAction = 'walk' | 'slash' | 'special' | 'throw' | 'hurt'
+
+export type Shot = { weapon: WeaponName; x: number; targetId: number }
 
 export type World = {
   tick: number
@@ -10,6 +13,8 @@ export type World = {
   foes: Foe[]
   action: KnightAction
   actionTicks: number
+  weapon: WeaponName
+  shot: Shot | null
   settled: number[]
   wounds: Record<string, number>
   scene: Scene
@@ -29,6 +34,8 @@ export function startWorld(scene: Scene): World {
     foes: [],
     action: 'walk',
     actionTicks: 0,
+    weapon: 'sword',
+    shot: null,
     settled: [],
     wounds: {},
     scene,

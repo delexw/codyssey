@@ -7,6 +7,8 @@ export type Canvas = (string | null)[][]
 
 export type Run = { text: string; color?: string; backgroundColor?: string }
 
+export type Mark = { text: string; color: string }
+
 export function spriteWidth(sprite: Sprite): number {
   return sprite.rows.reduce((widest, row) => Math.max(widest, row.length), 0)
 }
@@ -34,7 +36,7 @@ export function stamp(canvas: Canvas, sprite: Sprite, left: number, bottom: numb
   })
 }
 
-export function canvasRuns(canvas: Canvas): Run[][] {
+export function canvasRuns(canvas: Canvas, marks: readonly (readonly (Mark | null)[])[] = []): Run[][] {
   const rows: Run[][] = []
   for (let y = 0; y < canvas.length; y += 2) {
     const top = canvas[y] ?? []
@@ -43,8 +45,11 @@ export function canvasRuns(canvas: Canvas): Run[][] {
     for (let x = 0; x < top.length; x += 1) {
       const upper = top[x] ?? null
       const lower = bottom[x] ?? null
+      const mark = marks[y / 2]?.[x] ?? null
       const cell: Run =
-        upper !== null && lower !== null
+        mark !== null
+          ? { text: mark.text, color: mark.color }
+          : upper !== null && lower !== null
           ? { text: '▀', color: upper, backgroundColor: lower }
           : upper !== null
             ? { text: '▀', color: upper }
