@@ -62,11 +62,11 @@ The knight picks a weapon at random for every strike:
 
 | Weapon | Range | Power | How often | How it hits |
 |---|---|---|---|---|
-| Sword | Close | 1 heart | Often | A slash |
-| Axe | Close | 2 hearts | Sometimes | A heavy chop |
-| Lance | A little further | 1 heart | Sometimes | Reaches the monster a few steps early |
-| Dagger | Far | 1 heart | Sometimes | Thrown early, flies to the monster |
-| Fireball | Furthest | 2 hearts | Rarely | Cast from far off, flies to the monster |
+| ⚔️ Sword | Close | 1 heart | Often | A slash |
+| 🪓 Axe | Close | 2 hearts | Sometimes | A heavy chop |
+| 🔱 Lance | A little further | 1 heart | Sometimes | Reaches the monster a few steps early |
+| 🗡️ Dagger | Far | 1 heart | Sometimes | Thrown early, flies to the monster |
+| 🔥 Fireball | Furthest | 2 hearts | Rarely | Cast from far off, flies to the monster |
 
 Now and then a strike becomes a glowing sword special that takes 2 hearts. Each weapon is one file in `hooks/knightod/game/weapons/`, with its range, power and how often it's picked.
 
@@ -74,14 +74,14 @@ How the game works:
 
 | Mechanism | How it works |
 |---|---|
-| Hearts | The knight starts with 5. Every monster and boss shows its hearts above it. |
-| Monsters level up | Monsters start with 1 heart and gain one every 3 knight levels. Bosses gain one every 2 knight levels, on top of their own. |
-| Levels | Each level needs 8 more xp than the last. A new level adds a heart and heals the knight fully. |
-| Boss fights | A boss swings back and can wound the knight, but never lands the last blow. Some of the knight's strikes are specials that hit for 2. |
-| Falling | Losing the last heart to a failed command brings the knight back with full hearts and half the gold. |
-| Speed | The knight walks faster the quicker Claude spends tokens: normal, then double from 30k tokens a minute, then triple from 80k. |
-| Progress | Level, hearts, kills, gold, quests, play time, bosses slain and falls add up from task to task, for the rest of the session. A new session starts a new knight. Between tasks the knight sits by a campfire. |
-| Pausing | If Claude ends its turn while a background command or subagent is still running, the knight shows ⏸ paused and stays on the road. When the last one finishes, the knight makes camp. |
+| ❤️ Hearts | The knight starts with 5. Every monster and boss shows its hearts beside it. |
+| 📈 Monsters level up | Monsters start with 1 heart and gain one every 3 knight levels. Bosses gain one every 2 knight levels, on top of their own. |
+| ⭐ Levels | Each level needs 8 more xp than the last. A new level adds a heart and heals the knight fully. |
+| 👹 Boss fights | A boss swings back and can wound the knight, but never lands the last blow. Some of the knight's strikes are specials that hit for 2. |
+| 💀 Falling | Losing the last heart to a failed command brings the knight back with full hearts and half the gold. |
+| ⚡ Speed | The knight walks faster the quicker Claude spends tokens: normal, then double from 30k tokens a minute, then triple from 80k. |
+| 📜 Progress | Level, hearts, kills, gold, quests, play time, bosses slain and falls add up from task to task, for the rest of the session. A new session starts a new knight. Between tasks the knight sits by a campfire. |
+| ⏸️ Pausing | If Claude ends its turn while a background command or subagent is still running, the knight shows ⏸ paused and stays on the road. When the last one finishes, the knight makes camp. |
 
 ### scrollod: the quest log
 
