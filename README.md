@@ -62,13 +62,13 @@ The knight picks a weapon at random for every strike:
 
 | Weapon | Range | Power | How often | How it hits |
 |---|---|---|---|---|
-| ⚔️ Sword | Close | 1 heart | Often | A slash |
+| ⚔️ Sword | Close | 1 heart, or 2 with a special | Often | A slash. Now and then it becomes a glowing yellow special |
 | 🪓 Axe | Close | 2 hearts | Sometimes | A heavy chop |
 | 🔱 Lance | A little further | 1 heart | Sometimes | Reaches the monster a few steps early |
 | 🗡️ Dagger | Far | 1 heart | Sometimes | Thrown early, flies to the monster |
 | 🔥 Fireball | Furthest | 2 hearts | Rarely | Cast from far off, flies to the monster |
 
-Thrown weapons only open a fight. Once a monster has been hit and is coming in close, the knight switches to the sword, axe or lance. Now and then a strike becomes a glowing sword special that takes 2 hearts. Each weapon is one file in `hooks/knightod/game/weapons/`, with its range, power and how often it's picked.
+Thrown weapons only open a fight. Once a monster has been hit and is coming in close, the knight switches to the sword, axe or lance. Each weapon is one file in `hooks/knightod/game/weapons/`, with its range, power and how often it's picked.
 
 How the game works:
 
