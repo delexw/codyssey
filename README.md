@@ -1,4 +1,10 @@
-# codyssey
+<p align="center">
+  <img src="docs/codyssey.png" alt="codyssey logo: an amber shield with a sword whose crossguard is a pair of code brackets, a scroll and a music note" width="200">
+</p>
+
+<h1 align="center">codyssey</h1>
+
+<p align="center">Claude Code, played as an adventure: soundtrack, hero and quest log.</p>
 
 > [!IMPORTANT]
 > miod's music only works on macOS.

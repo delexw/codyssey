@@ -6,7 +6,7 @@ import type { World } from '../world'
 import { GROUND_ROW, KNIGHT_X } from '../world'
 
 function knightSprite(world: World): Sprite {
-  if (!world.scene.isRunning) return KNIGHT_REST
+  if (!world.scene.isRunning && world.foes.length === 0) return KNIGHT_REST
   if (world.action === 'slash' || world.action === 'throw') return WEAPONS[world.weapon ?? 'sword'].pose
   if (world.action === 'special') return KNIGHT_SPECIAL
   return frameOf(KNIGHT_WALK, Math.floor(world.scroll / 2))

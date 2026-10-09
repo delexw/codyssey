@@ -78,9 +78,12 @@ export function stepWorld(world: World, width: number): World {
     }
   }
 
+  if (!scene.isRunning) foes = foes.filter(foe => foe.kind !== 'boss' || scene.events.some(event => event.id === foe.id))
+  const isOnRoad = scene.isRunning || foes.length > 0
+
   const front = foes[0]
   const isBusy = foes.some(foe => foe.phase !== 'coming')
-  if (scene.isRunning && front !== undefined && front.phase === 'coming' && shot === null && !isBusy) {
+  if (isOnRoad && front !== undefined && front.phase === 'coming' && shot === null && !isBusy) {
     const strikeIndex = front.strikes || 0
     const planned = strikeOf(front, scene.seed, strikeIndex)
     const isSpecial = planned?.isSpecial === true
@@ -107,7 +110,7 @@ export function stepWorld(world: World, width: number): World {
   }
 
   const isBlocked = foes.some(foe => foe.phase !== 'coming') || (foes[0] !== undefined && foes[0].x <= CONTACT_X)
-  const step = scene.isRunning && !isBlocked ? scene.speed : 0
+  const step = isOnRoad && !isBlocked ? scene.speed : 0
   if (step > 0) foes = foes.map(foe => ({ ...foe, x: foe.x - step }))
 
   return { ...world, tick: world.tick + 1, scroll: world.scroll + step, lastEventId, foes, action, actionTicks, weapon, shot, settled: settled.slice(-MAX_SETTLED), wounds }

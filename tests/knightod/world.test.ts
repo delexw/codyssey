@@ -148,6 +148,28 @@ test('a thrown weapon leaves the knight early, flies, and lands on a monster tha
   expect(world.settled).toEqual([id])
 })
 
+test('when the task ends with a monster still on the road, the knight finishes it before making camp', async () => {
+  let world = stepWorld({ ...startWorld(scene()), scene: scene({ events: [{ id: 1, kind: 'monster', species: 'slime', name: 'the Slime', isSettled: false }], nextId: 2 }) }, WIDTH)
+  world = { ...world, scene: scene({ isRunning: false, events: [{ id: 1, kind: 'monster', species: 'slime', name: 'the Slime', isSettled: true }], nextId: 2 }) }
+  const startX = world.foes[0]?.x ?? 0
+  world = stepWorld(world, WIDTH)
+  expect(world.foes[0]?.x).toBeLessThan(startX)
+  let ticks = 0
+  while (world.foes.length > 0 && ticks < 200) {
+    world = stepWorld(world, WIDTH)
+    ticks += 1
+  }
+  expect(world.foes).toHaveLength(0)
+  expect(ticks).toBeLessThan(200)
+})
+
+test('a boss nobody reached runs off the road when the task ends', async () => {
+  let world = stepWorld({ ...startWorld(scene()), scene: scene({ events: [{ id: 1, kind: 'boss', species: 'ogre', name: 'the Ogre', hearts: 4, isSettled: false }], nextId: 2 }) }, WIDTH)
+  expect(world.foes).toHaveLength(1)
+  world = stepWorld({ ...world, scene: scene({ isRunning: false, events: [], nextId: 2 }) }, WIDTH)
+  expect(world.foes).toHaveLength(0)
+})
+
 test('the knight flashes hurt when a boss strikes back during the fight', async () => {
   let id = 1
   while (counterHits(7, id, 3) === 0) id += 1
