@@ -1,0 +1,43 @@
+{
+  "name": "codyssey",
+  "owner": {
+    "name": "Yang Liu",
+    "email": "adamyoungliu@gmail.com"
+  },
+  "metadata": {
+    "description": "Claude Code, played as an adventure: soundtrack, hero and quest log."
+  },
+  "plugins": [
+    {
+      "name": "miod",
+      "source": "./plugins/miod",
+      "description": "Generative music for Claude Code. Every task gets its own tune, and the mood follows what the agent is doing and how fast it spends tokens.",
+      "tags": [
+        "mod",
+        "music",
+        "generative-music",
+        "midi"
+      ]
+    },
+    {
+      "name": "knightod",
+      "source": "./plugins/knightod",
+      "description": "A pixel knight walks a narrow strip above the prompt while Claude works, fighting a monster for every edit and command, and saves the game when the task ends.",
+      "tags": [
+        "mod",
+        "game",
+        "pixel-art"
+      ]
+    },
+    {
+      "name": "scrollod",
+      "source": "./plugins/scrollod",
+      "description": "Restyles the transcript: tool calls as one-liners, results only when they fail, replies that stand out, in a plain or game style",
+      "tags": [
+        "mod",
+        "transcript",
+        "game"
+      ]
+    }
+  ]
+}
