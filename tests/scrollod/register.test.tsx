@@ -63,7 +63,7 @@ test('/scrollod off hands every row back to the engine and is remembered', async
   expect(await ui.find({ text: 'engine row' })).toBeDefined()
   await ui.unmount()
   const status = await $.command.run({ command: 'scrollod', args: '' } as Parameters<typeof $.command.run>[0])
-  expect(status.text).toBe('scrollod is off, style plain. Use /scrollod on, off or style <plain|game>.')
+  expect(status.text).toBe('scrollod is off, style game. Use /scrollod on, off or style <plain|game>.')
 })
 
 test('a session starts quiet or not as /scrollod was last left', async ($, on) => {
@@ -116,7 +116,8 @@ test('/scrollod style game draws tools as a battle log and replies as dialogue b
   standInForEngine(on)
   mock.store(on)
   const list = await $.command.run({ command: 'scrollod', args: 'style' } as Parameters<typeof $.command.run>[0])
-  expect(list.text).toBe('styles: plain, game. Now: plain. Use /scrollod style <name>.')
+  expect(list.text).toBe('styles: plain, game. Now: game. Use /scrollod style <name>.')
+  await $.command.run({ command: 'scrollod', args: 'style plain' } as Parameters<typeof $.command.run>[0])
   const game = await $.command.run({ command: 'scrollod', args: 'style game' } as Parameters<typeof $.command.run>[0])
   expect(game.text).toBe('scrollod style is game.')
 
@@ -164,6 +165,7 @@ test('in the game style your typed prompts get a blue YOU box, other rows and pl
   standInForEngine(on)
   mock.store(on)
   const prompt = { plugin: 'codyssey', surface: 'terminal', component: 'UserMessage', requestId: 'msg_u1', props: { text: 'fix the bug', origin: { kind: 'composer' }, isExpanded: false } } as const
+  await $.command.run({ command: 'scrollod', args: 'style plain' } as Parameters<typeof $.command.run>[0])
   const plain = await $.ui.mount(prompt as never)
   expect(await plain.find({ key: 'prompt-box' })).toBeUndefined()
   await plain.unmount()

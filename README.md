@@ -89,7 +89,7 @@ Restyles the transcript so the story is easier to follow.
 
 - Tool calls become one-liners, and their results show only when they fail.
 - Claude's replies stand out from the tool noise.
-- Two styles: **plain** (the default) and **game**, where each tool call wears a badge (☰ SCOUT, ⚒ FORGE, ⚔ FIGHT, ☄ MAGIC, ♞ ALLY, ⚗ POTION), Claude speaks from a nameplate, your prompts sit in a ◆ YOU box, and finished background tasks arrive as ⚑ QUEST rows.
+- Two styles. **game** (the default): each tool call wears a badge (☰ SCOUT, ⚒ FORGE, ⚔ FIGHT, ☄ MAGIC, ♞ ALLY, ⚗ POTION), Claude speaks from a nameplate, your prompts sit in a ◆ YOU box, and finished background tasks arrive as ⚑ QUEST rows. **plain**: the same quiet transcript without the badges.
 
 ![The transcript in the game style](docs/scrollod.gif)
 
@@ -111,7 +111,7 @@ If you loaded miod, knightod or scrollod on their own before (from `delexw/miod`
 All three come in the one plugin, and each turns on and off with its own command:
 
 - **Turn one off:** `/miod off`, `/knightod off` or `/scrollod off`, and `on` to bring it back. The choice is remembered in later sessions.
-- **Game style:** scrollod starts plain. Turn the game style on with `/scrollod style game`; it stays on in later sessions until you pick `/scrollod style plain`.
+- **Game style:** scrollod starts in the game style. Switch to the plain look with `/scrollod style plain`; it stays plain in later sessions until you pick `/scrollod style game`.
 
 ## Usage
 
@@ -130,8 +130,8 @@ All three come in the one plugin, and each turns on and off with its own command
 /scrollod                on or off, and which style
 /scrollod off            show the transcript as Claude Code draws it
 /scrollod on             restyle it again
-/scrollod style game     badges, nameplates and quest rows
-/scrollod style plain    back to the plain look
+/scrollod style plain    the quieter plain look
+/scrollod style game     back to badges, nameplates and quest rows
 ```
 
 ## Add your own
