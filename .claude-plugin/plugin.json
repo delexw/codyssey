@@ -1,0 +1,10 @@
+{
+  "name": "codyssey",
+  "version": "0.1.0",
+  "description": "Claude Code, played as an adventure: generative music that follows the agent's mood (/miod), a pixel knight who fights a monster for every edit and command (/knightod), and a transcript retold in a plain or game style (/scrollod). Each one turns on and off on its own.",
+  "author": {
+    "name": "Yang Liu",
+    "email": "adamyoungliu@gmail.com"
+  },
+  "types": "./types/index.d.ts"
+}

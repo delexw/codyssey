@@ -7,11 +7,11 @@ I'm an engineer, but these days I solve the boring problems entirely by vibe cod
 
 So I started thinking about how to make vibe coding fun again. codyssey turns a Claude Code session into a little adventure: while the agent does the work, you hear it as music, watch a pixel knight fight through it, and read it back as a quest log.
 
-It's three mods in one place. Take the ones you like and leave the rest: [each one installs, turns on and turns off on its own](#pick-your-mods).
+It's three mods in one plugin, and [each one turns on and off on its own](#pick-your-mods).
 
 ## What it is
 
-Three Claude Code mods, each its own plugin in this marketplace.
+Three Claude Code mods in one plugin.
 
 ### miod: the soundtrack
 
@@ -22,7 +22,7 @@ Generative music written on the spot while Claude works. No music files, no libr
 - The faster it spends tokens, the busier the music.
 - Above the prompt, one line shows the mood, flavour, key, tempo and energy, with a wave under it that scrolls with the music:
 
-![miod's status line and moving wave](docs/miod-wave.gif)
+![miod's status line and moving wave](docs/miod.gif)
 
 ### knightod: the hero
 
@@ -32,7 +32,38 @@ A pixel knight walks a narrow strip above the prompt while Claude works.
 - A failed command costs a heart. A test that passes after a failure summons the Bug Dragon.
 - Committing, pushing or opening a PR opens a treasure chest.
 - Every two minutes of play a boss comes: King Slime, Ogre, Lich, Demon, then the Shadow King.
-- Kills bring gold and xp, xp brings levels, and the game is saved when the task ends. The knight makes camp while you're away.
+- Monsters and bosses grow tougher as the knight levels up.
+- Kills bring gold and xp, and xp brings levels. Progress carries from task to task within a session; a new session starts a new knight. The knight makes camp while you're away.
+
+![The knight fighting through a task](docs/knightod.gif)
+
+What you can meet on the road:
+
+| When Claude… | The knight meets | What it brings |
+|---|---|---|
+| Reads or searches files (Read, Grep, Glob) | A scroll | Heals 1 heart |
+| Edits or writes a file | A Slime, Goblin, Skeleton, Orc or Spider (the file name picks which) | 1 xp and 1 to 3 gold, plus 1 xp and 1 gold for each extra heart |
+| Searches or fetches the web | A Bat or Ghost | Same as any monster |
+| Runs a command | A Goblin or Wolf | Same as any monster |
+| Hands work to a subagent | A Skeleton | Same as any monster |
+| Calls an MCP tool | A Slime | Same as any monster |
+| Runs a command that fails | A hit | Loses 1 heart |
+| Runs a passing test or check after a failure | The Bug Dragon, 4 hearts | 2 xp and 5 gold or more per heart |
+| Commits, pushes, merges, tags, or opens or merges a PR | A treasure chest | 5 to 24 gold |
+| Has been playing for 2, 4, 6, 8, then 10 minutes | King Slime (3 hearts), Ogre (4), Lich (5), Demon (6), Shadow King (7) | 2 xp and 5 gold or more per heart |
+
+How the game works:
+
+| Mechanism | How it works |
+|---|---|
+| Hearts | The knight starts with 5. Every monster and boss shows its hearts above it. |
+| Monsters level up | Monsters start with 1 heart and gain one every 3 knight levels. Bosses gain one every 2 knight levels, on top of their own. |
+| Levels | Each level needs 8 more xp than the last. A new level adds a heart and heals the knight fully. |
+| Boss fights | A boss swings back and can wound the knight, but never lands the last blow. Some of the knight's strikes are specials that hit for 2. |
+| Falling | Losing the last heart to a failed command brings the knight back with full hearts and half the gold. |
+| Speed | The knight walks faster the quicker Claude spends tokens: normal, then double from 30k tokens a minute, then triple from 80k. |
+| Progress | Level, hearts, kills, gold, quests, play time, bosses slain and falls add up from task to task, for the rest of the session. A new session starts a new knight. Between tasks the knight sits by a campfire. |
+| Pausing | If Claude ends its turn while a background command or subagent is still running, the knight shows ⏸ paused and stays on the road. When the last one finishes, the knight makes camp. |
 
 ### scrollod: the quest log
 
@@ -42,25 +73,26 @@ Restyles the transcript so the story is easier to follow.
 - Claude's replies stand out from the tool noise.
 - Two styles: **plain** (the default) and **game**, where each tool call wears a badge (☰ SCOUT, ⚒ FORGE, ⚔ FIGHT, ☄ MAGIC, ♞ ALLY, ⚗ POTION), Claude speaks from a nameplate, your prompts sit in a ◆ YOU box, and finished background tasks arrive as ⚑ QUEST rows.
 
+![The transcript in the game style](docs/scrollod.gif)
+
 ## Install
 
 Needs Claude Code 2.1.290 or newer, on macOS.
 
 ```bash
 claude plugin marketplace add delexw/codyssey
-claude plugin install miod@codyssey
-claude plugin install knightod@codyssey
-claude plugin install scrollod@codyssey
+claude plugin install codyssey@codyssey
 ```
 
-Install only the ones you want, then start a new session.
+Then start a new session. All three mods start on.
+
+If you loaded miod, knightod or scrollod on their own before (from `delexw/miod`, or a folder in `CLAUDE_CODE_PLUGIN_DIRS`), remove those first, or their commands are registered twice.
 
 ## Pick your mods
 
-Each mod is its own plugin, so you choose which ones run:
+All three come in the one plugin, and each turns on and off with its own command:
 
-- **Leave one out for good:** don't install it, or turn it off with `claude plugin disable knightod@codyssey` (and back on with `claude plugin enable knightod@codyssey`).
-- **Pause one for now:** `/miod off`, `/knightod off` or `/scrollod off`, and `on` to bring it back. `/scrollod off` sticks across sessions; `/miod off` and `/knightod off` last for the session.
+- **Turn one off:** `/miod off`, `/knightod off` or `/scrollod off`, and `on` to bring it back. The choice is remembered in later sessions.
 - **Game style:** scrollod starts plain. Turn the game style on with `/scrollod style game`; it stays on in later sessions until you pick `/scrollod style plain`.
 
 ## Usage
@@ -72,7 +104,7 @@ Each mod is its own plugin, so you choose which ones run:
 /miod wave               list the wave looks: bars, line, mirror, dots, pulse
 /miod wave dots          switch the wave to the dots look
 
-/knightod                the saved game: level, hearts, kills, gold, bosses
+/knightod                this session's game: level, hearts, kills, gold, bosses
 /knightod off            put the knight away
 /knightod on             send the knight out again
 /knightod reset          start over with a new knight
@@ -86,25 +118,23 @@ Each mod is its own plugin, so you choose which ones run:
 
 ## Add your own
 
-Each mod lives in `plugins/<name>/`.
+Each mod lives in its own folder under `hooks/`, and `hooks/register.tsx` turns all three on.
 
-- **miod:** each mood is one row in `plugins/miod/hooks/moods.ts`, each flavour one row in `hooks/flavours.ts`, each sound style one entry in `hooks/styles.ts`, and each wave look one file in `hooks/waves/`.
-- **knightod:** monsters and bosses are sprites in `plugins/knightod/hooks/sprites/`; which tool raises which encounter is in `hooks/game/cues.ts`, and the boss order and timing in `hooks/game/bosses.ts`.
-- **scrollod:** the game style's badges are in `plugins/scrollod/hooks/badge.ts`, and the styles in `hooks/style.ts`.
+- **miod:** each mood is one row in `hooks/miod/moods.ts`, each flavour one row in `hooks/miod/flavours.ts`, each sound style one entry in `hooks/miod/styles.ts`, and each wave look one file in `hooks/miod/waves/`.
+- **knightod:** monsters and bosses are sprites in `hooks/knightod/sprites/`; which tool raises which encounter is in `hooks/knightod/game/cues.ts`, and the boss order and timing in `hooks/knightod/game/bosses.ts`.
+- **scrollod:** the game style's badges are in `hooks/scrollod/badge.ts`, and the styles in `hooks/scrollod/style.ts`.
 
 Then check it:
 
 ```sh
 claude plugin validate .
-claude plugin validate plugins/<name>
-claude plugin test plugins/<name>
+claude plugin test .
 ```
 
-Run a checkout without installing it with `claude --plugin-dir plugins/<name>`.
+Run a checkout without installing it with `claude --plugin-dir <path to this repo>`.
 
 ## Limitations
 
 - Only tested on macOS, where Claude Code plays miod's audio through `afplay`.
 - miod's sound is simple chiptune-style tones.
-- Each mod only sees the session it's loaded in.
-- If you installed miod from `delexw/miod` before, uninstall that copy (`claude plugin uninstall miod@miod`) so `/miod` isn't registered twice.
+- codyssey only sees the session it's loaded in.
