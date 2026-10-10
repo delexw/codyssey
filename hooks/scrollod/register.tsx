@@ -1,6 +1,7 @@
 import { atom, read, update } from 'claude-code'
 import type { Register } from 'claude-code'
 
+import { drawAllyBox } from './ally-box'
 import { drawNoticeRow } from './notice-row'
 import { drawPromptBox } from './prompt-box'
 import { drawReply } from './reply'
@@ -85,6 +86,7 @@ export const registerScrollod: Register = on => {
     if (e.props.origin.kind === 'task-notification') {
       return drawNoticeRow($.ui.resolve(e), { text: e.props.text, status: e.props.task?.status, durationMs: e.props.task?.durationMs })
     }
+    if (e.props.from !== undefined) return drawAllyBox($.ui.resolve(e), { name: e.props.from.name, text: e.props.text })
     return next(e)
   })
 

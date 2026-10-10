@@ -89,7 +89,7 @@ Restyles the transcript so the story is easier to follow.
 
 - Tool calls become one-liners, and their results show only when they fail.
 - Claude's replies stand out from the tool noise.
-- Two styles. **game** (the default): each tool call wears a badge (☰ SCOUT, ⚒ FORGE, ⚔ FIGHT, ☄ MAGIC, ♞ ALLY, ⚗ POTION), Claude speaks from a nameplate, your prompts sit in a ◆ YOU box, and finished background tasks arrive as ⚑ QUEST rows. **plain**: the same quiet transcript without the badges.
+- Two styles. **game** (the default): each tool call wears a badge (☰ SCOUT, ⚒ FORGE, ⚔ FIGHT, ☄ MAGIC, ♞ ALLY, ⚗ POTION), Claude speaks from a nameplate, your prompts sit in a ◆ YOU box, finished background tasks arrive as ⚑ QUEST rows, and a subagent's report comes back in a green ♞ box under its name. **plain**: the same quiet transcript without the badges.
 
 ![The transcript in the game style](docs/scrollod.gif)
 

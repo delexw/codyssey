@@ -200,3 +200,31 @@ test('in the game style a finished background task shows as a quest row', async 
   await row.unmount()
 
 })
+
+test('in the game style a message from another agent sits in a green ally box under its name', async ($, on) => {
+  standInForEngine(on)
+  mock.store(on)
+  await $.command.run({ command: 'scrollod', args: 'style game' } as Parameters<typeof $.command.run>[0])
+  const message = {
+    plugin: 'codyssey',
+    surface: 'terminal',
+    component: 'UserMessage',
+    requestId: 'msg_a1',
+    props: {
+      text: '[Subagent hand-back] The text below is the final report. The report follows:\n  All checks pass.',
+      origin: { kind: 'unclassified' },
+      isExpanded: false,
+      from: { name: 'general-purpose' },
+    },
+  } as const
+  const box = await $.ui.mount(message as never)
+  expect((await box.find({ key: 'ally-box' }))?.props).toMatchObject({ borderStyle: 'round', borderColor: '#43A047' })
+  expect(await box.find({ text: ' ♞ GENERAL-PURPOSE ' })).toBeDefined()
+  expect((await box.find({ type: 'Markdown' }))?.props.text).toBe('All checks pass.')
+  await box.unmount()
+
+  await $.command.run({ command: 'scrollod', args: 'style plain' } as Parameters<typeof $.command.run>[0])
+  const plain = await $.ui.mount(message as never)
+  expect(await plain.find({ key: 'ally-box' })).toBeUndefined()
+  await plain.unmount()
+})
