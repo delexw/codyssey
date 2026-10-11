@@ -2,7 +2,7 @@ import type { EventKind, GameEvent, Species } from '../../../types'
 import { heartCount } from './label'
 import { hashText } from './random'
 
-export type Cue = { kind: EventKind; species: Species | null; target: string; hearts?: number }
+export type Cue = { kind: EventKind; species: Species | null; target: string; hearts?: number; minionSlot?: number }
 
 const READING_TOOLS = ['Read', 'Grep', 'Glob', 'LS', 'NotebookRead']
 const EXPLORING_TOOLS = ['WebFetch', 'WebSearch']

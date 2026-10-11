@@ -22,9 +22,9 @@ const scene = atom({ plugin: 'codyssey', key: 'knightod.scene' } as const, null)
 
 const CAMP_MS = 12_000
 
-type Session = { turnId: string | null; spends: Spend[]; wasFailing: boolean; campTimer: Timer | null; backgroundTasks: number }
+type Session = { turnId: string | null; spends: Spend[]; wasFailing: boolean; campTimer: Timer | null; backgroundTasks: number; minionSlots: Map<string, number> }
 
-const session: Session = { turnId: null, spends: [], wasFailing: false, campTimer: null, backgroundTasks: 0 }
+const session: Session = { turnId: null, spends: [], wasFailing: false, campTimer: null, backgroundTasks: 0, minionSlots: new Map() }
 
 async function startQuest($: EngineInterface, prompt: string, turnId: string) {
   session.campTimer?.cancel()
@@ -50,6 +50,16 @@ async function wound($: EngineInterface, wounds: Readonly<Record<string, number>
   const wounded = woundEvents(await read($, save), current, wounds)
   await update($, save, () => wounded.save)
   await update($, scene, () => wounded.scene)
+}
+
+function minionSlotOf(agentId: string): number {
+  const slot = session.minionSlots.get(agentId) ?? session.minionSlots.size
+  session.minionSlots.set(agentId, slot)
+  return slot
+}
+
+function cueFrom(cue: Cue, agentId: string | undefined): Cue {
+  return agentId === undefined ? cue : { ...cue, minionSlot: minionSlotOf(agentId) }
 }
 
 async function recordCue($: EngineInterface, cue: Cue) {
@@ -106,6 +116,7 @@ async function finishBackgroundTask($: EngineInterface) {
 export const registerKnightod: Register = on => {
   on('session.start', { cwd: /^/ }, async ($, e, next) => {
     session.backgroundTasks = 0
+    session.minionSlots = new Map()
     const saved = await $.store.get(STORE_KEY)
     if (typeof saved === 'boolean') await update($, isEnabled, () => saved)
     await $.command.register({
@@ -146,7 +157,7 @@ export const registerKnightod: Register = on => {
     const ran = await next(e)
     if (startsInBackground(e) && ran.deny === undefined && ran.isError !== true) session.backgroundTasks += 1
     const hasFailed = ran.deny === undefined && ran.isError === true
-    await recordCue($, cueForCommand(e.command, hasFailed, session.wasFailing))
+    await recordCue($, cueFrom(cueForCommand(e.command, hasFailed, session.wasFailing), e.agentId))
     await summonDueBoss($)
     if (hasFailed) session.wasFailing = true
     else if (isTestCommand(e.command)) session.wasFailing = false
@@ -155,7 +166,7 @@ export const registerKnightod: Register = on => {
 
   on('tool.call', { tool: /^/ }, async ($, e, next) => {
     if (e.tool === 'Bash') return next(e)
-    await recordCue($, cueForTool(e.tool, e as unknown as Record<string, unknown>))
+    await recordCue($, cueFrom(cueForTool(e.tool, e as unknown as Record<string, unknown>), e.agentId))
     await summonDueBoss($)
     const ran = await next(e)
     if (startsInBackground(e) && ran.deny === undefined && ran.isError !== true) session.backgroundTasks += 1

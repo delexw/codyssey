@@ -23,6 +23,7 @@ export type GameEvent = {
   name: string
   hearts?: number
   woundsTaken?: number
+  minionSlot?: number
   isSettled: boolean
 }
 

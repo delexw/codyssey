@@ -20,6 +20,7 @@ export function startScene(seed: number, previous: Scene | null, now: number): S
 export function withCue(scene: Scene, cue: Cue): Scene {
   const event: GameEvent = { id: scene.nextId, kind: cue.kind, species: cue.species, name: cueName(cue), isSettled: false }
   if (cue.hearts !== undefined) event.hearts = cue.hearts
+  if (cue.minionSlot !== undefined) event.minionSlot = cue.minionSlot
   const events = [...scene.events, event]
   while (events.length > MAX_EVENTS && events[0]?.isSettled === true) events.shift()
   return { ...scene, events, nextId: scene.nextId + 1, latest: event.name }

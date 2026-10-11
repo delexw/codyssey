@@ -1,6 +1,8 @@
+export type Palette = Readonly<Record<string, string>>
+
 export type Sprite = {
   rows: readonly string[]
-  palette: Readonly<Record<string, string>>
+  palette: Palette
 }
 
 export type Canvas = (string | null)[][]

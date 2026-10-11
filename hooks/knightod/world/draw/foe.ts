@@ -1,6 +1,8 @@
+import { seededRandom } from '../../game/random'
 import { CHEST_CLOSED, CHEST_OPEN } from '../../sprites/chest'
+import type { Monster } from '../../sprites/monsters'
 import { MONSTERS } from '../../sprites/monsters'
-import type { Canvas } from '../../sprites/pixel'
+import type { Canvas, Palette, Sprite } from '../../sprites/pixel'
 import { frameOf, stamp } from '../../sprites/pixel'
 import { SCROLL } from '../../sprites/scroll'
 import type { Foe } from '../foe'
@@ -8,7 +10,19 @@ import { GROUND_ROW } from '../world'
 
 const FLYING_ROW = 2
 
-export function drawFoe(canvas: Canvas, foe: Foe, tick: number): void {
+export function minionPalette(monster: Monster, seed: number, slot: number): Palette | undefined {
+  const palettes = monster.minionPalettes
+  const offset = Math.floor(seededRandom(seed)() * palettes.length)
+  return palettes[(offset + slot) % palettes.length]
+}
+
+function foeSprite(monster: Monster, foe: Foe, tick: number, seed: number): Sprite {
+  const frame = frameOf(monster.frames, Math.floor(tick / 2))
+  const palette = foe.minionSlot === undefined ? undefined : minionPalette(monster, seed, foe.minionSlot)
+  return palette === undefined ? frame : { ...frame, palette }
+}
+
+export function drawFoe(canvas: Canvas, foe: Foe, tick: number, seed: number): void {
   if (foe.kind === 'scroll') {
     if (foe.phase === 'coming') stamp(canvas, SCROLL, foe.x, GROUND_ROW - 1)
     return
@@ -18,5 +32,5 @@ export function drawFoe(canvas: Canvas, foe: Foe, tick: number): void {
     return
   }
   const monster = MONSTERS[foe.species ?? 'slime']
-  if (foe.phase === 'coming' || tick % 2 !== 0) stamp(canvas, frameOf(monster.frames, Math.floor(tick / 2)), foe.x, monster.isFlying ? FLYING_ROW : GROUND_ROW - 1)
+  if (foe.phase === 'coming' || tick % 2 !== 0) stamp(canvas, foeSprite(monster, foe, tick, seed), foe.x, monster.isFlying ? FLYING_ROW : GROUND_ROW - 1)
 }

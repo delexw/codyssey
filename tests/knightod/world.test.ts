@@ -4,8 +4,11 @@ import type { Scene } from '../../types'
 import { KNIGHT_WIDTH } from '../../hooks/knightod/sprites/knight'
 import { counterHits, fightPlan } from '../../hooks/knightod/game/fight'
 import { drawWorld } from '../../hooks/knightod/world/draw'
+import { drawFoe, minionPalette } from '../../hooks/knightod/world/draw/foe'
+import type { Foe } from '../../hooks/knightod/world/foe'
+import { MONSTERS } from '../../hooks/knightod/sprites/monsters'
 import { HEART_COLOR, HEART_ROW, heartMarks } from '../../hooks/knightod/world/draw/hearts'
-import { canvasRuns } from '../../hooks/knightod/sprites/pixel'
+import { blankCanvas, canvasRuns } from '../../hooks/knightod/sprites/pixel'
 import { WEAPONS } from '../../hooks/knightod/game/weapons'
 import { stepWorld } from '../../hooks/knightod/world/step'
 import type { World } from '../../hooks/knightod/world/world'
@@ -193,4 +196,22 @@ test('a special attack shows the glowing sword and takes two hearts at once', as
   for (let ticks = 0; ticks < 100 && world.foes[0]?.strikes === 0; ticks += 1) world = stepWorld(world, WIDTH)
   expect(world.action).toBe('special')
   expect(world.foes[0]?.hp).toBe(2)
+})
+
+test('a main monster keeps its own colours, and each subagent slot gets a spare set, reused once the pool runs out', async () => {
+  const goblin: Foe = { id: 1, kind: 'monster', species: 'goblin', x: 10, phase: 'coming', ticks: 0, hp: 1, maxHp: 1, strikes: 0 }
+  const colours = (foe: Foe) => {
+    const canvas = blankCanvas(WIDTH, STRIP_PIXEL_ROWS)
+    drawFoe(canvas, foe, 0, 7)
+    return new Set(canvas.flat().filter(colour => colour !== null))
+  }
+  const main = MONSTERS.goblin.frames[0]?.palette ?? {}
+  const pool = MONSTERS.goblin.minionPalettes
+
+  expect([...colours(goblin)].every(colour => Object.values(main).includes(colour as string))).toBe(true)
+  const slots = pool.map((_, slot) => JSON.stringify([...colours({ ...goblin, minionSlot: slot })].sort()))
+  expect(new Set(slots).size).toBe(pool.length)
+  expect(slots).not.toContain(JSON.stringify([...colours(goblin)].sort()))
+  expect(JSON.stringify([...colours({ ...goblin, minionSlot: pool.length })].sort())).toBe(slots[0])
+  expect(minionPalette(MONSTERS.goblin, 7, 1)).toEqual(minionPalette(MONSTERS.goblin, 7, 1 + pool.length))
 })

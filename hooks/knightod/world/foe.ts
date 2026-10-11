@@ -14,6 +14,7 @@ export type Foe = {
   hp: number
   maxHp: number
   strikes: number
+  minionSlot?: number
 }
 
 export const FOE_SPACING = 9
@@ -23,7 +24,9 @@ export function spawnFoe(event: GameEvent, foes: readonly Foe[], width: number):
   if (event.kind === 'hurt') return null
   const lastX = foes.at(-1)?.x ?? 0
   const hearts = event.hearts ?? 1
-  return { id: event.id, kind: event.kind, species: event.species, x: Math.max(width, lastX + FOE_SPACING), phase: 'coming', ticks: 0, hp: hearts, maxHp: hearts, strikes: 0 }
+  const foe: Foe = { id: event.id, kind: event.kind, species: event.species, x: Math.max(width, lastX + FOE_SPACING), phase: 'coming', ticks: 0, hp: hearts, maxHp: hearts, strikes: 0 }
+  if (event.minionSlot !== undefined) foe.minionSlot = event.minionSlot
+  return foe
 }
 
 export function hitTicks(foe: Foe): number {

@@ -145,3 +145,21 @@ test('while a background task still runs after the task ends, the knight pauses 
   expect(await gone.find({ key: 'knightod-strip' })).toBeUndefined()
   await gone.unmount()
 })
+
+test('a subagent tool call brings a minion with its own colour slot, kept for that subagent and separate from the main monsters', async ($, on) => {
+  mock.clock(on, { now: 1000 })
+  standInForEngine(on)
+
+  await $.turn.start({ text: 'research the bug', turnId: 'turn-1' })
+  const edit = (file: string, agentId?: string) => $.tool.call({ tool: 'Edit', file_path: file, old_string: 'a', new_string: 'b', agentId } as Parameters<typeof $.tool.call>[0])
+  await edit('/repo/main.ts')
+  await edit('/repo/one.ts', 'agent-a')
+  await edit('/repo/two.ts', 'agent-b')
+  await edit('/repo/three.ts', 'agent-a')
+
+  const band = await $.ui.mount({ ...BAND, surface: 'terminal' })
+  const strip = await band.find({ key: 'knightod-strip' })
+  const events = (strip?.props.props as { scene: { events: { minionSlot?: number }[] } }).scene.events
+  expect(events.map(event => event.minionSlot)).toEqual([undefined, 0, 1, 0])
+  await band.unmount()
+})

@@ -12,7 +12,7 @@ export function drawWorld(world: World, width: number): Canvas {
   const canvas = blankCanvas(width, STRIP_PIXEL_ROWS)
   drawGround(canvas, world, width)
   drawCampfire(canvas, world)
-  for (const foe of world.foes) drawFoe(canvas, foe, world.tick)
+  for (const foe of world.foes) drawFoe(canvas, foe, world.tick, world.scene.seed)
   drawKnight(canvas, world)
   drawShot(canvas, world)
   return canvas
