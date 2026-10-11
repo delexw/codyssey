@@ -10,6 +10,7 @@ import { finishQuest, NEW_SAVE, playMinutes } from './game/save'
 import { overflowIds, restScene, startScene, unsettledIdsExceptBosses, withCue, withoutUnfoughtBosses } from './game/scene'
 import { settledIdsOf, settleEvents, woundEvents, woundsOf } from './game/settle'
 import { speedFromRate } from './game/speed'
+import { isSessionCall } from '../shared/origin'
 import type { Spend } from '../shared/tokenRate'
 import { RATE_WINDOW_MS, tokensPerMinute } from '../shared/tokenRate'
 import { hearts } from './game/label'
@@ -154,6 +155,7 @@ export const registerKnightod: Register = on => {
   })
 
   on('tool.call', { tool: 'Bash' }, async ($, e, next) => {
+    if (!isSessionCall(next.origin)) return next(e)
     const ran = await next(e)
     if (startsInBackground(e) && ran.deny === undefined && ran.isError !== true) session.backgroundTasks += 1
     const hasFailed = ran.deny === undefined && ran.isError === true
@@ -165,7 +167,7 @@ export const registerKnightod: Register = on => {
   }).catch(($, e, next) => next(e))
 
   on('tool.call', { tool: /^/ }, async ($, e, next) => {
-    if (e.tool === 'Bash') return next(e)
+    if (e.tool === 'Bash' || !isSessionCall(next.origin)) return next(e)
     await recordCue($, cueFrom(cueForTool(e.tool, e as unknown as Record<string, unknown>), e.agentId))
     await summonDueBoss($)
     const ran = await next(e)

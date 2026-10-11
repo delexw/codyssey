@@ -16,6 +16,7 @@ import { DEFAULT_WAVE, isWaveName, WAVE_NAMES } from './waves'
 import type { Task } from './task'
 import type { ScaleName } from './theory'
 import type { NowPlaying } from '../../types'
+import { isSessionCall } from '../shared/origin'
 import type { Spend } from '../shared/tokenRate'
 import { RATE_WINDOW_MS, tokensPerMinute } from '../shared/tokenRate'
 
@@ -248,6 +249,7 @@ export const registerMiod: Register = on => {
   })
 
   on('tool.call', { tool: 'Bash' }, async ($, e, next) => {
+    if (!isSessionCall(next.origin)) return next(e)
     noteActivity(activityForCommand(e.command))
     const ran = await next(e)
     noteCommandResult($, ran.deny === undefined && ran.isError === true)
@@ -255,7 +257,7 @@ export const registerMiod: Register = on => {
   }).catch(($, e, next) => next(e))
 
   on('tool.call', async ($, e, next) => {
-    if (e.tool === 'Bash') {
+    if (e.tool === 'Bash' || !isSessionCall(next.origin)) {
       return next(e)
     }
     const activity = activityForTool(e.tool)
